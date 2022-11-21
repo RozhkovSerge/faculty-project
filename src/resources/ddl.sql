@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS teacher(
                                    id BIGSERIAL PRIMARY KEY,
                                    first_name VARCHAR(128),
                                    last_name VARCHAR(128),
-                                   email VARCHAR(64) UNIQUE
+                                   email VARCHAR(64) UNIQUE,
                                    address BIGSERIAL REFERENCES address(id),
                                    course BIGSERIAL REFERENCES course(id)
     );
