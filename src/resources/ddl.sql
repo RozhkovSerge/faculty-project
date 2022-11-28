@@ -40,21 +40,21 @@ CREATE TABLE IF NOT EXISTS student
 
 CREATE TABLE IF NOT EXISTS archive
     (
-        id BIGSERIAL PRIMARY KEY,
-        student_id BIGSERIAL REFERENCES faculty.student(id),
-        course_id BIGSERIAL REFERENCES faculty.course(id),
-        mark INT,
-        date_of_exam DATE
+     id BIGSERIAL PRIMARY KEY,
+     student_id BIGSERIAL REFERENCES faculty.student(id),
+     course_id BIGSERIAL REFERENCES faculty.course(id),
+     mark INT,
+     date_of_exam DATE
     );
 
 CREATE TABLE IF NOT EXISTS students_courses
     (
-        student_id BIGSERIAL REFERENCES faculty.student(id),
-        course_id BIGSERIAL REFERENCES faculty.course(id)
+     student_id BIGSERIAL REFERENCES faculty.student(id),
+     course_id BIGSERIAL REFERENCES faculty.course(id)
     );
 
 CREATE TABLE IF NOT EXISTS students_teachers
     (
-        student_id BIGSERIAL REFERENCES faculty.student(id),
-        teacher_id BIGSERIAL REFERENCES faculty.teacher(id)
+     student_id BIGSERIAL REFERENCES faculty.student(id),
+     teacher_id BIGSERIAL REFERENCES faculty.teacher(id)
     );
