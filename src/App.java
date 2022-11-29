@@ -3,9 +3,6 @@ import dao.RoleDao;
 import dao.UserDao;
 import entity.Address;
 import entity.Role;
-import entity.User;
-
-import java.util.Optional;
 
 public class App {
     public static void main(String[] args) {
@@ -16,10 +13,13 @@ public class App {
 
         Address addressOne = new Address(1L, "Rostov", "1stAv", "23", "1");
         Role roleAdmin = new Role(1L, "Adminnn");
-        System.out.println(roleDao.delete(1L));
+//        System.out.println(roleDao.delete(1L));
 //        roleDao.update(roleAdmin);
 //        addressDao.save(addressOne);
 //        roleDao.save(roleAdmin);
+//        System.out.println(roleDao.findAll());
+//        System.out.println(addressDao.findAll());
+
 //        User userToSave = new User();
 //        userToSave.setFirst_name("Tom");
 //        userToSave.setLast_name("Tomson");
@@ -31,6 +31,7 @@ public class App {
 //        System.out.println(userDao.save(userToSave).getId());
 ////        System.out.println(userDao.save(userToSave).getId());
 ////        System.out.println(userDao.delete(8L));
+        System.out.println(userDao.findAll());
 //
 //        Optional<User> mayBeUser = userDao.findById(1L);
 //        System.out.println(mayBeUser);

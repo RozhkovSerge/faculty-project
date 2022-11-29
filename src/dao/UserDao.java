@@ -11,12 +11,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
-public class UserDao    {
+public class UserDao {
 
-    private AddressDao addressDao;
-    private RoleDao roleDao;
+    private final AddressDao addressDao;
+    private final RoleDao roleDao;
     private static final UserDao INSTANCE = new UserDao();
     private static final String DELETE_SQL = """
             DELETE FROM faculty.users WHERE id=?
@@ -35,16 +37,28 @@ public class UserDao    {
             WHERE id = ?
             """;
     private static final String FIND_BY_ID_SQL = """
-            SELECT 
-            id, 
-            first_name, 
-            last_name, 
-            email, 
-            password, 
-            address, 
-            role 
-            FROM faculty.users 
+            SELECT
+            id,
+            first_name,
+            last_name,
+            email,
+            password,
+            address,
+            role
+            FROM faculty.users
             WHERE id = ?
+            """;
+
+    private static final String FIND_ALL_SQL = """
+            SELECT
+            id,
+            first_name,
+            last_name,
+            email,
+            password,
+            address,
+            role
+            FROM faculty.users
             """;
 
     private UserDao() {
@@ -59,16 +73,16 @@ public class UserDao    {
             preparedStatement.setLong(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
-                Optional<Address> address = addressDao.findOneById(resultSet.getLong("address"));
-                Optional<Role> role = roleDao.findOneById(resultSet.getLong("role"));
+                Optional<Address> address = addressDao.findById(resultSet.getLong("address"));
+                Optional<Role> role = roleDao.findById(resultSet.getLong("role"));
                 user = new User(
                         resultSet.getLong("id"),
                         resultSet.getString("first_name"),
                         resultSet.getString("last_name"),
                         resultSet.getString("email"),
                         resultSet.getString("password"),
-                        address.stream().findFirst().orElse(null),
-                        role.stream().findFirst().orElse(null)
+                        address.orElse(null),
+                        role.orElse(null)
                 );
             }
             return Optional.ofNullable(user);
@@ -76,7 +90,32 @@ public class UserDao    {
         } catch (SQLException e) {
             throw new DaoException(e);
         }
+    }
 
+    public List<User> findAll() {
+        try(Connection connection = ConnectionManager.get();
+            PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL_SQL)) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<User> users = new ArrayList<>();
+
+            while (resultSet.next()) {
+                Optional<Address> address = addressDao.findById(resultSet.getLong("address"));
+                Optional<Role> role = roleDao.findById(resultSet.getLong("role"));
+                users.add(new User(
+                        resultSet.getLong("id"),
+                        resultSet.getString("first_name"),
+                        resultSet.getString("last_name"),
+                        resultSet.getString("email"),
+                        resultSet.getString("password"),
+                        address.stream().findFirst().orElse(null),
+                        role.stream().findFirst().orElse(null)
+                ));
+            }
+            return users;
+
+        } catch (SQLException e) {
+            throw new DaoException(e);
+        }
     }
 
     public boolean delete(Long id) {

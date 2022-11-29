@@ -9,6 +9,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class RoleDao {
@@ -19,6 +21,10 @@ public class RoleDao {
 
     private final static String FIND_BY_ID_SQL = """
             SELECT id, name FROM faculty.roles WHERE id = ?
+            """;
+
+    private final static String FIND_ALL_SQL = """
+            SELECT id, name FROM faculty.roles
             """;
     private static final String UPDATE_SQL = """
             UPDATE faculty.roles SET name=? WHERE id=?
@@ -45,7 +51,7 @@ public class RoleDao {
         }
     }
 
-    public Optional<Role> findOneById(Long id) {
+    public Optional<Role> findById(Long id) {
 
         try (Connection connection = ConnectionManager.get();
              PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_ID_SQL)) {
@@ -62,6 +68,24 @@ public class RoleDao {
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public List<Role> findAll() {
+        try(Connection connection = ConnectionManager.get();
+            PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL_SQL)){
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<Role> roles = new ArrayList<>();
+            while(resultSet.next()) {
+                roles.add(new Role(
+                        resultSet.getLong("id"),
+                        resultSet.getString("name")
+                ));
+            }
+            return roles;
+
+        } catch (SQLException e) {
+            throw new DaoException(e);
         }
     }
 
@@ -87,7 +111,6 @@ public class RoleDao {
             throw new DaoException(e);
         }
     }
-
 
     public static RoleDao getInstance() {
         return INSTANCE;
