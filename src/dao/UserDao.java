@@ -14,6 +14,9 @@ import java.sql.Statement;
 import java.util.Optional;
 
 public class UserDao {
+
+    private AddressDao addressDao;
+    private RoleDao roleDao;
     private static final UserDao INSTANCE = new UserDao();
     private static final String DELETE_SQL = """
             DELETE FROM faculty.users WHERE id=?

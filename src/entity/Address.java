@@ -8,6 +8,9 @@ public class Address {
     private String house;
     private String apartment;
 
+    public Address() {
+    }
+
     public Address(Long id, String city, String street, String house, String apartment) {
         this.id = id;
         this.city = city;
