@@ -13,7 +13,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Optional;
 
-public class UserDao {
+public class UserDao    {
 
     private AddressDao addressDao;
     private RoleDao roleDao;
@@ -48,6 +48,8 @@ public class UserDao {
             """;
 
     private UserDao() {
+        addressDao = new AddressDao();
+        roleDao = new RoleDao();
     }
 
     public Optional<User> findOneById(Long id) {
@@ -57,19 +59,18 @@ public class UserDao {
             preparedStatement.setLong(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
-                Address address = addressDao.findOneById(resultSet.getLong("address"));
-                Role role = roleDao.findOneById(resultSet.getLong("role"));
+                Optional<Address> address = addressDao.findOneById(resultSet.getLong("address"));
+                Optional<Role> role = roleDao.findOneById(resultSet.getLong("role"));
                 user = new User(
                         resultSet.getLong("id"),
                         resultSet.getString("first_name"),
                         resultSet.getString("last_name"),
                         resultSet.getString("email"),
                         resultSet.getString("password"),
-                        address,
-                        role
+                        address.stream().findFirst().orElse(null),
+                        role.stream().findFirst().orElse(null)
                 );
             }
-
             return Optional.ofNullable(user);
 
         } catch (SQLException e) {

@@ -1,7 +1,7 @@
 CREATE SCHEMA IF NOT EXISTS faculty;
 SET search_path TO faculty;
 
-CREATE TABLE IF NOT EXISTS roles
+CREATE TABLE IF NOT EXISTS user_roles
 (
     id BIGSERIAL PRIMARY KEY,
     name VARCHAR(32)
@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS users
     email VARCHAR(64) UNIQUE,
     password VARCHAR(64),
     address BIGSERIAL REFERENCES address(id),
-    role BIGSERIAL REFERENCES roles(id)
+    role BIGSERIAL REFERENCES user_roles(id)
     );
 
 -- CREATE TABLE IF NOT EXISTS course
