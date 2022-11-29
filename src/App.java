@@ -3,6 +3,8 @@ import entity.Address;
 import entity.Role;
 import entity.User;
 
+import java.util.Optional;
+
 public class App {
     public static void main(String[] args) {
 
@@ -13,6 +15,9 @@ public class App {
         Role role = new Role(2L, "Admin");
         User userToSave = new User(1L, "Tom", "Tomson", "tom@mail.ru", "123", address, role);
 //        System.out.println(userDao.save(userToSave).getId());
-        System.out.println(userDao.delete(8L));
+//        System.out.println(userDao.delete(8L));
+        Optional<User> mayBeUser = userDao.findOneById(6L);
+        System.out.println(mayBeUser.get());
+
     }
 }

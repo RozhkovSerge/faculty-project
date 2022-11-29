@@ -47,27 +47,29 @@ public class UserDao {
     private UserDao() {
     }
 
-    public Optional<User> findOneById (Long id) {
+    public Optional<User> findOneById(Long id) {
         User user = null;
-        try(Connection connection = ConnectionManager.get();
-            PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_ID_SQL)){
+        try (Connection connection = ConnectionManager.get();
+             PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_ID_SQL)) {
             preparedStatement.setLong(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
-            if(resultSet.next()) {
+            if (resultSet.next()) {
+                Address address = addressDao.findOneById(resultSet.getLong("address"));
+                Role role = roleDao.findOneById(resultSet.getLong("role"));
                 user = new User(
                         resultSet.getLong("id"),
                         resultSet.getString("first_name"),
                         resultSet.getString("last_name"),
                         resultSet.getString("email"),
                         resultSet.getString("password"),
-                        resultSet.getObject("address"), // compile error. Required Address provided Object
-                        resultSet.getObject("role") // compile error. Required Role provided Object
-                        );
+                        address,
+                        role
+                );
             }
 
             return Optional.ofNullable(user);
 
-        } catch (SQLException e){
+        } catch (SQLException e) {
             throw new DaoException(e);
         }
 
