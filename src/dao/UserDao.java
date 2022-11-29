@@ -52,7 +52,7 @@ public class UserDao    {
         roleDao = new RoleDao();
     }
 
-    public Optional<User> findOneById(Long id) {
+    public Optional<User> findById(Long id) {
         User user = null;
         try (Connection connection = ConnectionManager.get();
              PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_ID_SQL)) {
