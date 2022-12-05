@@ -1,5 +1,6 @@
 package dao;
 
+import dto.UserFilter;
 import entity.Address;
 import entity.Role;
 import entity.User;
@@ -14,6 +15,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static java.util.stream.Collectors.joining;
 
 public class UserDao {
 
@@ -92,9 +95,59 @@ public class UserDao {
         }
     }
 
+    public List<User> findAll(UserFilter filter) {
+        List<Object> parameters = new ArrayList<>();
+        List<String> whereSql = new ArrayList<>();
+        if (filter.firstName() != null) {
+            whereSql.add("first_name LIKE ?");
+            parameters.add("%" + filter.firstName() + "%");
+        }
+        if (filter.lastName() != null) {
+            whereSql.add("last_name LIKE ?");
+            parameters.add("%" + filter.lastName() + "%");
+        }
+        if (filter.email() != null) {
+            whereSql.add("email=?");
+            parameters.add(filter.email());
+        }
+        parameters.add(filter.limit());
+        parameters.add(filter.offset());
+        String where = whereSql.stream().collect(joining(" AND ", " WHERE ", " LIMIT ? OFFSET ? "));
+        String sql = FIND_ALL_SQL + where;
+        System.out.println("sql = " + sql);
+        System.out.println("where = " + where);
+        try (Connection connection = ConnectionManager.get();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            for (int i = 0; i < parameters.size(); i++) {
+                preparedStatement.setObject(i + 1, parameters.get(i));
+            }
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<User> users = new ArrayList<>();
+
+            System.out.println("preparedStatement= " + preparedStatement);
+            while (resultSet.next()) {
+                Optional<Address> address = addressDao.findById(resultSet.getLong("address"));
+                Optional<Role> role = roleDao.findById(resultSet.getLong("role"));
+                users.add(new User(
+                        resultSet.getLong("id"),
+                        resultSet.getString("first_name"),
+                        resultSet.getString("last_name"),
+                        resultSet.getString("email"),
+                        resultSet.getString("password"),
+                        address.orElse(null),
+                        role.orElse(null)
+                ));
+            }
+            return users;
+
+        } catch (SQLException e) {
+            throw new DaoException(e);
+        }
+    }
+
     public List<User> findAll() {
-        try(Connection connection = ConnectionManager.get();
-            PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL_SQL)) {
+        try (Connection connection = ConnectionManager.get();
+             PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL_SQL)) {
             ResultSet resultSet = preparedStatement.executeQuery();
             List<User> users = new ArrayList<>();
 
@@ -165,7 +218,6 @@ public class UserDao {
             throw new DaoException(e);
         }
     }
-
 
     public static UserDao getInstance() {
         return INSTANCE;
