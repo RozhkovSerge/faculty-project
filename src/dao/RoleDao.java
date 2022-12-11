@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class RoleDao {
+public class RoleDao implements Dao<Long, Role> {
     private static final RoleDao INSTANCE = new RoleDao();
     private static final String SAVE_SQL = """
             INSERT INTO faculty.roles (name) VALUES (?)
@@ -89,12 +89,13 @@ public class RoleDao {
         }
     }
 
-    public void update(Role role) {
+    public boolean update(Role role) {
         try (Connection connection = ConnectionManager.get();
              PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_SQL)) {
             preparedStatement.setString(1, role.getName());
             preparedStatement.setLong(2, role.getId());
-            preparedStatement.executeUpdate();
+
+            return preparedStatement.executeUpdate() > 0;
 
         } catch (SQLException e) {
             throw new DaoException(e);

@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class CourseDao {
+public class CourseDao implements Dao<Long, Course> {
 
     private static final CourseDao INSTANCE = new CourseDao();
 
@@ -36,6 +36,12 @@ public class CourseDao {
             FROM faculty.course
             """;
 
+    private final String FIND_ALL_BY_USER_ID_SQL = """
+            SELECT id, name, description
+            FROM faculty.course WHERE id in
+                (SELECT course_id from faculty.users_courses where user_id=?)
+            """;
+
     private final String UPDATE_SQL = """
             UPDATE faculty.course SET name=?, description=?
             WHERE id=?
@@ -47,8 +53,7 @@ public class CourseDao {
             """;
 
     public Course save(Course course) {
-        try (Connection connection = ConnectionManager.get();
-             PreparedStatement preparedStatement = connection.prepareStatement(SAVE_SQL, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection connection = ConnectionManager.get(); PreparedStatement preparedStatement = connection.prepareStatement(SAVE_SQL, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, course.getName());
             preparedStatement.setString(2, course.getDescription());
             preparedStatement.executeUpdate();
@@ -66,17 +71,12 @@ public class CourseDao {
 
     public Optional<Course> findById(Long id) {
         Course course = null;
-        try (Connection connection = ConnectionManager.get();
-             PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_ID_SQL)) {
+        try (Connection connection = ConnectionManager.get(); PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_ID_SQL)) {
             preparedStatement.setLong(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
-                course = new Course(
-                        resultSet.getLong("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("description")
-                );
+                course = new Course(resultSet.getLong("id"), resultSet.getString("name"), resultSet.getString("description"));
             }
             return Optional.ofNullable(course);
 
@@ -86,16 +86,11 @@ public class CourseDao {
     }
 
     public List<Course> findAll() {
-        try (Connection connection = ConnectionManager.get();
-             PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL_SQL)) {
+        try (Connection connection = ConnectionManager.get(); PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL_SQL)) {
             ResultSet resultSet = preparedStatement.executeQuery();
             List<Course> courses = new ArrayList<>();
             while (resultSet.next()) {
-                courses.add(new Course(
-                        resultSet.getLong("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("description")
-                ));
+                courses.add(new Course(resultSet.getLong("id"), resultSet.getString("name"), resultSet.getString("description")));
             }
             return courses;
 
@@ -104,12 +99,28 @@ public class CourseDao {
         }
     }
 
+    public List<Course> findAllByUserId(Long studentId) {
+        try (Connection connection = ConnectionManager.get(); PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL_BY_USER_ID_SQL)) {
+            preparedStatement.setLong(1, studentId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<Course> courses = new ArrayList<>();
+            while (resultSet.next()) {
+                courses.add(new Course(resultSet.getLong("id"), resultSet.getString("name"), resultSet.getString("description")));
+            }
+
+            return courses;
+
+        } catch (SQLException e) {
+            throw new DaoException(e);
+        }
+    }
+
     public boolean update(Course course) {
-        try (Connection connection = ConnectionManager.get();
-             PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_SQL)) {
+        try (Connection connection = ConnectionManager.get(); PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_SQL)) {
             preparedStatement.setString(1, course.getName());
             preparedStatement.setString(2, course.getDescription());
             preparedStatement.setLong(3, course.getId());
+
             return preparedStatement.executeUpdate() > 0;
 
         } catch (SQLException e) {
@@ -118,14 +129,17 @@ public class CourseDao {
     }
 
     public boolean delete(Long id) {
-        try (Connection connection = ConnectionManager.get();
-             PreparedStatement preparedStatement = connection.prepareStatement(DELETE_SQL)) {
+        try (Connection connection = ConnectionManager.get(); PreparedStatement preparedStatement = connection.prepareStatement(DELETE_SQL)) {
             preparedStatement.setLong(1, id);
             return preparedStatement.executeUpdate() > 0;
 
         } catch (SQLException e) {
             throw new DaoException(e);
         }
+    }
+
+    private List<Course> buildCourse(ResultSet resultSet) {
+        return null;
     }
 
     public static CourseDao getInstance() {

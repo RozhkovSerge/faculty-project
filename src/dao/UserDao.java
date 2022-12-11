@@ -18,7 +18,7 @@ import java.util.Optional;
 
 import static java.util.stream.Collectors.joining;
 
-public class UserDao {
+public class UserDao implements Dao<Long, User> {
 
     private final AddressDao addressDao;
     private final RoleDao roleDao;
@@ -203,7 +203,7 @@ public class UserDao {
         }
     }
 
-    public void update(User user) {
+    public boolean update(User user) {
         try (Connection connection = ConnectionManager.get();
              PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_SQL)) {
             preparedStatement.setString(1, user.getFirst_name());
@@ -213,7 +213,9 @@ public class UserDao {
             preparedStatement.setObject(5, user.getAddress().getId());
             preparedStatement.setObject(6, user.getRole().getId());
             preparedStatement.setLong(7, user.getId());
-            preparedStatement.executeUpdate();
+
+            return preparedStatement.executeUpdate() > 0;
+
         } catch (SQLException e) {
             throw new DaoException(e);
         }

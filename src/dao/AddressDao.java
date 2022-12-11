@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class AddressDao {
+public class AddressDao implements Dao<Long, Address> {
 
     private final static AddressDao INSTANCE = new AddressDao();
 
@@ -118,11 +118,13 @@ public class AddressDao {
         }
     }
 
-    public void update(Address address) {
+    public boolean update(Address address) {
         try (Connection connection = ConnectionManager.get();
              PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_SQL)) {
             preparedStatement.setLong(1, address.getId());
-            preparedStatement.executeUpdate();
+
+            return preparedStatement.executeUpdate() > 0;
+
         } catch (SQLException e) {
             throw new DaoException(e);
         }

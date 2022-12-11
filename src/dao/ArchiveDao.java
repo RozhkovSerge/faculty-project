@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class ArchiveDao {
+public class ArchiveDao implements Dao<Long, Archive> {
     private static final ArchiveDao INSTANCE = new ArchiveDao();
 
     private final String SAVE_SQL = """

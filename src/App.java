@@ -53,8 +53,8 @@ public class App {
 //        System.out.println(mayBeRole.get());
 //        System.out.println(mayBeAddress.get());
 
-//        checkCourseDao();
-        checkArchiveDao();
+        checkCourseDao();
+//        checkArchiveDao();
     }
 
     private static void checkArchiveDao() {
@@ -86,6 +86,9 @@ public class App {
         System.out.println("-----findById()-----------");
         Optional<Course> optionalCourse = courseDao.findById(1L);
         optionalCourse.ifPresent(System.out::println);
+
+        System.out.println("-----findByUserId()-----------");
+        System.out.println(courseDao.findAllByUserId(1L));
 
         System.out.println("-----findAll()-----------");
         List<Course> courses = courseDao.findAll();
