@@ -11,7 +11,7 @@
 <ul>
     <c:forEach var="user" items="${requestScope.users}">
         <li>
-            <a href="${pageContext.request.contextPath}/courses?user_id=${user.id}">${user.firstName} ${user.lastName} </a>
+            ${user.firstName} ${fn:toLowerCase(user.lastName)}
         </li>
     </c:forEach>
 </ul>

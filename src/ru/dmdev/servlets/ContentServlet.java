@@ -6,15 +6,11 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import ru.dmdev.dto.UserDto;
-import ru.dmdev.entity.User;
 import ru.dmdev.service.UserService;
 import ru.dmdev.util.JspHelper;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toMap;
 
@@ -27,7 +23,7 @@ public class ContentServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         List<UserDto> userDtos = userService.findAll();
         req.setAttribute("users", userDtos);
-        req.getSession().setAttribute("usersMap", userDtos.stream().collect(toMap(UserDto::getId, UserDto::getFirst_name)));
+        req.getSession().setAttribute("usersMap", userDtos.stream().collect(toMap(UserDto::getId, UserDto::getFirstName)));
         req.getRequestDispatcher(JspHelper.getPath("content")).forward(req, resp);
     }
 }

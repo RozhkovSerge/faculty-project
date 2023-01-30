@@ -185,8 +185,8 @@ public class UserDao implements Dao<Long, User> {
     public User save(User user) {
         try (Connection connection = ConnectionManager.get();
              PreparedStatement preparedStatement = connection.prepareStatement(SAVE_SQL, Statement.RETURN_GENERATED_KEYS)) {
-            preparedStatement.setString(1, user.getFirst_name());
-            preparedStatement.setString(2, user.getLast_name());
+            preparedStatement.setString(1, user.getFirstName());
+            preparedStatement.setString(2, user.getLastName());
             preparedStatement.setString(3, user.getEmail());
             preparedStatement.setString(4, user.getPassword());
             preparedStatement.setObject(5, user.getAddress().getId());
@@ -206,8 +206,8 @@ public class UserDao implements Dao<Long, User> {
     public boolean update(User user) {
         try (Connection connection = ConnectionManager.get();
              PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_SQL)) {
-            preparedStatement.setString(1, user.getFirst_name());
-            preparedStatement.setString(2, user.getLast_name());
+            preparedStatement.setString(1, user.getFirstName());
+            preparedStatement.setString(2, user.getLastName());
             preparedStatement.setString(3, user.getEmail());
             preparedStatement.setString(4, user.getPassword());
             preparedStatement.setObject(5, user.getAddress().getId());

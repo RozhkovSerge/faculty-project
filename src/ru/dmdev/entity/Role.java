@@ -1,5 +1,9 @@
 package ru.dmdev.entity;
 
+import lombok.Builder;
+import lombok.Value;
+
+@Builder
 public class Role {
     private Long id;
     private String name;

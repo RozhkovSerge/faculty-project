@@ -55,14 +55,14 @@ public class App {
 //        System.out.println(mayBeRole.get());
 //        System.out.println(mayBeAddress.get());
 
-        checkCourseDao();
-//        checkArchiveDao();
+//        checkCourseDao();
+        checkArchiveDao();
     }
 
     private static void checkArchiveDao() {
         System.out.println("-----save()-----------");
         Archive archive = new Archive(3L, 3L,1L, 4, new Date(System.currentTimeMillis()));
-//        System.out.println(archiveDao.save(archive));
+        System.out.println(archiveDao.save(archive));
 
         System.out.println("-----findById()-----------");
         System.out.println(archiveDao.findById(1L));

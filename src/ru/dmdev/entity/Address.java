@@ -1,5 +1,8 @@
 package ru.dmdev.entity;
 
+import lombok.Builder;
+
+@Builder
 public class Address {
 
     private Long id;
